@@ -30,3 +30,5 @@ s1 = int(c.recv(1024).decode())
 print(f'exchanged (Rk,Sk): {r1, s1}')
 
 print('success' if r1 == s1 else 'failure')
+
+s.close()

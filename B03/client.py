@@ -26,3 +26,5 @@ s.send(f'{s1}'.encode())
 print(f'exchanged (Rk,Sk): {r1, s1}')
 
 print('success' if r1 == s1 else 'failure')
+
+s.close()
