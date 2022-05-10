@@ -1,26 +1,28 @@
-import socket                
+import socket
 
-port = 5005
+inet = 'localhost'
+port = 5000
 
-prime_number = 23
-premetive_root = 5
 
-q = int(input("Enter a Private Key: "))
+s = socket.socket()
+s.connect((inet, port))
 
-s = socket.socket()          
-print("Socket created...")
- 
-s.connect(('127.0.0.1', port)) 
+p = int(input('prime number (p): '))
+q = int(input('prime number (q): '))
 
-client_publickey = (premetive_root ** q) % prime_number             
-server_publickey = s.recv(1024) 
-print("\n")
-print("Received Public key from Server:",int(server_publickey))
-print("\n")
+s.send(f'{p},{q}'.encode())
+print(f'sent (p,q): {p,q}')
 
-s.send(str(client_publickey).encode())
-client_secret = (int(server_publickey) ** q) % prime_number
-print ("Final Secret Key: ", client_secret)
-print("\n")
+b = int(input('private key (b): '))
+s0 = (q ** b) % p
 
-s.close()
+r0 = int(s.recv(1024).decode())
+s.send(f'{s0}'.encode())
+print(f'exchanged (R,S): {r0, s0}')
+
+s1 = (r0 ** b) % p
+r1 = int(s.recv(1024).decode())
+s.send(f'{s1}'.encode())
+print(f'exchanged (Rk,Sk): {r1, s1}')
+
+print('success' if r1 == s1 else 'failure')

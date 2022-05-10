@@ -1,33 +1,32 @@
-import socket                
+import socket
 
-port = 5005
+inet = 'localhost'
+port = 5000
 
-prime_number = 23
-premetive_root = 5
 
-p = int(input("Enter a Private key: "))
+s = socket.socket()
+s.bind((inet, port))
+s.listen()
+print(f'listening at {inet}:{port}')
 
-s = socket.socket()          
-print("Socket created...")
- 
-s.bind(('127.0.0.1', port))
+c, addr = s.accept()
+print(f'connected to {addr}')
 
-s.listen(1)                 
+p, q = c.recv(1024).decode().split(',')
+p = int(p)
+q = int(q)
+print(f'received (p,q): {p, q}')
 
-c, addr = s.accept()      
-print("\n")
-print('Got a connection from', addr) 
-print("\n")
+a = int(input('private key (a): '))
+r0 = (q ** a) % p
 
-server_publickey = (premetive_root ** p) % prime_number
-c.send(str(server_publickey).encode()) 
+c.send(f'{r0}'.encode())
+s0 = int(c.recv(1024).decode())
+print(f'exchanged (R,S): {r0, s0}')
 
-client_publickey = c.recv(1024)
-print("Received Public key from Client:",int(client_publickey))
-print("\n")
+r1 = (s0 ** a) % p
+c.send(f'{r1}'.encode())
+s1 = int(c.recv(1024).decode())
+print(f'exchanged (Rk,Sk): {r1, s1}')
 
-server_secret = (int(client_publickey) ** p) % prime_number
-
-print ("Final Secret Key: ", server_secret)
-print("\n")
-c.close()
+print('success' if r1 == s1 else 'failure')
