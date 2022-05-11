@@ -14020,16 +14020,45 @@ a.anchor-link {
         
         <span class="k">return</span> <span class="n">generators</span>
     
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="n">y</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span>
+    <span class="k">def</span> <span class="nf">mod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">e</span><span class="o">%</span><span class="k">self</span>.p
     
-    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">y</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span>
+    <span class="k">def</span> <span class="nf">invmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            for tangent:</span>
+<span class="sd">                u = (3x1^2 + a) * invmod(2y1) (mod p)</span>
+<span class="sd">            for two points:</span>
+<span class="sd">                u = (y2-y1) * invmod(x2-x1) (mod p)</span>
+<span class="sd">                </span>
+<span class="sd">            xr = u^2 - x1 - x2 (mod p)</span>
+<span class="sd">            yr = u(x1 - xr) - y1 (mod p)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">P1</span>
+        <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">P2</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">((</span><span class="mi">3</span><span class="o">*</span><span class="n">x1</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">invmod</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">y1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">((</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">invmod</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">))</span>
+            
+        <span class="n">xr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span>
+        <span class="n">yr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">xr</span><span class="p">)</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">):</span>
+        <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">P2</span>
+        <span class="n">P2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="o">-</span><span class="n">y2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">P</span>
+        <span class="k">while</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span>
         <span class="k">return</span> <span class="n">res</span>
 </pre></div>
 
@@ -14136,7 +14165,7 @@ a.anchor-link {
 
 <span class="c1"># pubic key for A</span>
 <span class="c1"># Pa = ka.G</span>
-<span class="n">Pa</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">ka</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">ka</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">Pa</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">ka</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;public key for A:&#39;</span><span class="p">,</span> <span class="n">Pa</span><span class="p">)</span>
 </pre></div>
 
@@ -14157,7 +14186,7 @@ a.anchor-link {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>public key for A: (8, 16)
+<pre>public key for A: (6, 11)
 </pre>
 </div>
 </div>
@@ -14177,7 +14206,7 @@ a.anchor-link {
 
 <span class="c1"># public key for B</span>
 <span class="c1"># Pb = kb.G</span>
-<span class="n">Pb</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">Pb</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;public key for B:&#39;</span><span class="p">,</span> <span class="n">Pb</span><span class="p">)</span>
 </pre></div>
 
@@ -14198,7 +14227,7 @@ a.anchor-link {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>public key for B: (10, 3)
+<pre>public key for B: (15, 4)
 </pre>
 </div>
 </div>
@@ -14271,11 +14300,11 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># C1 = r.G</span>
-<span class="n">C1</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">C1</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
 
 <span class="c1"># C2 = M + rPb</span>
-<span class="n">rPb</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Pb</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Pb</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="n">C2</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rPb</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rPb</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">rPb</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Pb</span><span class="p">)</span>
+<span class="n">C2</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">rPb</span><span class="p">)</span>
 
 <span class="c1"># cipher (C) = [C1, C2]</span>
 <span class="n">C</span> <span class="o">=</span> <span class="p">[</span><span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">]</span>
@@ -14299,7 +14328,7 @@ a.anchor-link {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>cipher: [(12, 7), (11, 3)]
+<pre>cipher: [(15, 4), (7, 10)]
 </pre>
 </div>
 </div>
@@ -14321,8 +14350,8 @@ a.anchor-link {
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># M = C2 - kbC1</span>
 
-<span class="n">kbC1</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">C1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">C1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">C2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kbC1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">curve</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">C2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kbC1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">kbC1</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">C1</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span> <span class="n">kbC1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;decrypted message:&#39;</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
 </pre></div>
 
